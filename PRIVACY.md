@@ -8,6 +8,8 @@ Grammafy is a Chrome extension that offers grammar and spelling suggestions in e
 
 When checking is enabled, Grammafy reads text in supported editable fields to identify possible corrections and display underlines. This can include website content, user-generated content, and personal communications entered into those fields. Grammafy processes that text on the device using Chrome's built-in AI APIs. Grammafy does not send the writing, suggestions, or surrounding page content to the developer or an external proofreading service.
 
+Writing may contain personally identifiable information, such as names or email addresses. Grammafy handles that information only as part of the text being proofread; it does not extract it into a profile or contact list. It observes edits and suggestion interactions to refresh checks and apply or dismiss corrections, and keeps the accepted-suggestion count described below. It does not record a keystroke log or send interaction analytics to the developer.
+
 Grammafy does not check password inputs. It skips fields that are disabled, read-only, marked with `spellcheck="false"`, or explicitly opted out using a supported attribute. Single-line text and search inputs are checked only when that option is enabled.
 
 This policy describes Grammafy. A website into which you type may independently receive or process that writing under its own privacy policy.
