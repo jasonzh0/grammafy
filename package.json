@@ -1,0 +1,22 @@
+{
+  "name": "grammafy",
+  "version": "0.1.0",
+  "description": "On-device grammar and spelling correction for every text box in Chrome. No accounts, no servers, no data leaves your machine.",
+  "private": true,
+  "scripts": {
+    "watch": "node scripts/build.mjs --watch",
+    "build": "pnpm typecheck && node scripts/build.mjs && pnpm dist",
+    "dist": "rm -rf dist && mkdir -p dist && cd build/ && bestzip ../dist/grammafy.zip *",
+    "test": "node --test scripts/*.test.mjs",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write --ignore-unknown \"{public,scripts,src}/**/*.{html,css,js,mjs,ts,json}\"",
+    "icons": "node scripts/icons.mjs"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.1.43",
+    "bestzip": "^2.2.1",
+    "esbuild": "^0.28.1",
+    "prettier": "^2.7.1",
+    "typescript": "^6.0.3"
+  }
+}

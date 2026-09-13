@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Grammafy</title>
+    <style>
+      :root {
+        --bg: #0f1117;
+        --panel: #171a23;
+        --panel-2: #1d2130;
+        --line: rgba(255, 255, 255, 0.07);
+        --text: #e6e8ef;
+        --dim: #8b90a0;
+        --faint: #5f6475;
+        --accent: #3ddc97;
+        --accent-dim: rgba(61, 220, 151, 0.16);
+        --warn: #f5b544;
+        --danger: #ff6b6b;
+        --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial,
+          sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        width: 340px;
+        font-family: var(--font);
+        font-size: 13px;
+        color: var(--text);
+        background: var(--bg);
+        background-image: radial-gradient(
+          90% 50% at 50% -10%,
+          rgba(61, 220, 151, 0.12),
+          transparent 60%
+        );
+      }
+      header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 16px 10px;
+      }
+      .mark {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: linear-gradient(145deg, #1f2937, #0b1220);
+        display: grid;
+        place-items: center;
+        font-weight: 800;
+        font-size: 16px;
+        color: #fff;
+        box-shadow: 0 0 0 1px var(--line) inset;
+        position: relative;
+      }
+      .mark::after {
+        content: '';
+        position: absolute;
+        left: 6px;
+        right: 6px;
+        bottom: 5px;
+        height: 2px;
+        border-radius: 2px;
+        background: var(--accent);
+      }
+      h1 {
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        flex: 1;
+      }
+      .pill {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 3px 8px;
+        border-radius: 999px;
+        background: var(--panel-2);
+        color: var(--dim);
+        border: 1px solid var(--line);
+      }
+      .pill[data-state='ready'] {
+        color: var(--accent);
+        background: var(--accent-dim);
+        border-color: transparent;
+      }
+      .pill[data-state='downloadable'],
+      .pill[data-state='downloading'] {
+        color: var(--warn);
+      }
+      .pill[data-state='unavailable'],
+      .pill[data-state='unsupported'] {
+        color: var(--danger);
+      }
+
+      main {
+        padding: 0 12px 12px;
+        display: grid;
+        gap: 10px;
+      }
+      section {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 12px;
+      }
+      .status p {
+        color: var(--dim);
+        line-height: 1.45;
+      }
+      .status strong {
+        color: var(--text);
+        font-weight: 600;
+      }
+      .status .actions {
+        margin-top: 10px;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      button {
+        appearance: none;
+        border: 0;
+        border-radius: 8px;
+        padding: 8px 12px;
+        font: inherit;
+        font-weight: 600;
+        cursor: pointer;
+        background: var(--panel-2);
+        color: var(--text);
+        border: 1px solid var(--line);
+      }
+      button.primary {
+        background: var(--accent);
+        color: #062a1b;
+        border-color: transparent;
+      }
+      button.primary:hover {
+        filter: brightness(1.06);
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: default;
+      }
+      .progress {
+        height: 6px;
+        border-radius: 3px;
+        background: var(--panel-2);
+        overflow: hidden;
+        margin-top: 10px;
+      }
+      .progress > i {
+        display: block;
+        height: 100%;
+        width: 0;
+        background: var(--accent);
+        transition: width 0.2s;
+      }
+      .progress[data-indeterminate] > i {
+        width: 30%;
+        animation: slide 1.1s ease-in-out infinite;
+      }
+      @keyframes slide {
+        from {
+          transform: translateX(-100%);
+        }
+        to {
+          transform: translateX(400%);
+        }
+      }
+
+      .row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 8px 0;
+      }
+      .row + .row {
+        border-top: 1px solid var(--line);
+      }
+      .row .label {
+        display: grid;
+        gap: 2px;
+      }
+      .row .label small {
+        color: var(--faint);
+        font-size: 11px;
+      }
+      .switch {
+        position: relative;
+        width: 36px;
+        height: 20px;
+        flex: none;
+      }
+      .switch input {
+        position: absolute;
+        opacity: 0;
+        inset: 0;
+        margin: 0;
+        cursor: pointer;
+      }
+      .switch span {
+        position: absolute;
+        inset: 0;
+        border-radius: 999px;
+        background: var(--panel-2);
+        border: 1px solid var(--line);
+        transition: background 0.15s;
+      }
+      .switch span::after {
+        content: '';
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #fff;
+        transition: transform 0.15s;
+      }
+      .switch input:checked + span {
+        background: var(--accent);
+        border-color: transparent;
+      }
+      .switch input:checked + span::after {
+        transform: translateX(16px);
+        background: #062a1b;
+      }
+      .switch input:disabled + span {
+        opacity: 0.4;
+      }
+
+      .try textarea {
+        width: 100%;
+        min-height: 64px;
+        resize: vertical;
+        font: inherit;
+        line-height: 1.45;
+        color: var(--text);
+        background: var(--panel-2);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 8px 10px;
+        outline: none;
+      }
+      .try textarea:focus {
+        border-color: rgba(61, 220, 151, 0.5);
+      }
+      .try .actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 8px;
+      }
+      .try .hint {
+        color: var(--faint);
+        font-size: 11px;
+      }
+      .results {
+        margin-top: 8px;
+        display: grid;
+        gap: 6px;
+      }
+      .fix {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 8px;
+        align-items: baseline;
+        padding: 6px 8px;
+        border-radius: 8px;
+        background: var(--panel-2);
+        font-size: 12.5px;
+      }
+      .fix .old {
+        color: var(--faint);
+        text-decoration: line-through;
+      }
+      .fix .new {
+        color: var(--accent);
+        font-weight: 600;
+      }
+      .fix .type {
+        margin-left: auto;
+        font-size: 10px;
+        color: var(--faint);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      .ok {
+        color: var(--accent);
+        font-size: 12.5px;
+      }
+      .err {
+        color: var(--danger);
+        font-size: 12.5px;
+      }
+
+      footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 16px 12px;
+        color: var(--faint);
+        font-size: 11px;
+      }
+      footer b {
+        color: var(--dim);
+        font-weight: 600;
+      }
+      h2 {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--faint);
+        margin-bottom: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="mark" aria-hidden="true">G</div>
+      <h1>Grammafy</h1>
+      <span class="pill" id="pill" data-state="">…</span>
+    </header>
+
+    <main>
+      <section class="status" id="status">
+        <p id="status-text">Checking the on-device model…</p>
+        <div class="actions" id="status-actions" hidden>
+          <button class="primary" id="download">Download model</button>
+          <button id="diagnostics" hidden>Open diagnostics</button>
+        </div>
+        <div class="progress" id="progress" hidden><i></i></div>
+      </section>
+
+      <section>
+        <div class="row">
+          <div class="label">
+            Enable Grammafy<small>Underline mistakes as you type</small>
+          </div>
+          <label class="switch"
+            ><input type="checkbox" id="enabled" /><span></span
+          ></label>
+        </div>
+        <div class="row">
+          <div class="label">Pause on this site<small id="host-label">—</small></div>
+          <label class="switch"
+            ><input type="checkbox" id="pause-host" /><span></span
+          ></label>
+        </div>
+        <div class="row">
+          <div class="label">
+            Check single-line inputs<small>Search boxes and short fields</small>
+          </div>
+          <label class="switch"
+            ><input type="checkbox" id="check-inputs" /><span></span
+          ></label>
+        </div>
+      </section>
+
+      <section class="try">
+        <h2>Try it</h2>
+        <textarea
+          id="try-text"
+          spellcheck="false"
+          placeholder="Paste a sentence to test the checker…"
+        >
+I seen him yesterday at the store, and he bought two loafs of bread.</textarea
+        >
+        <div class="actions">
+          <button class="primary" id="try-run">Check</button>
+          <span class="hint" id="try-hint">Runs locally, nothing is uploaded.</span>
+        </div>
+        <div class="results" id="try-results"></div>
+      </section>
+    </main>
+
+    <footer>
+      <span><b id="accepted">0</b> suggestions accepted</span>
+      <span id="version"></span>
+    </footer>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
